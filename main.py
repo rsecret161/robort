@@ -1,4 +1,5 @@
 from itertools import count
+import itertools
 import logging
 from dotenv import load_dotenv
 load_dotenv("local.env")
@@ -28,11 +29,16 @@ intents.message_content = True
 intents.members = True
 intents.guilds = True
 
-bot = commands.Bot(command_prefix='robort ', intents=intents, case_insensitive=True)
+def prefix(bot, message):
+    chars = [(c.lower(), c.upper()) if c.isalpha() else (c,) for c in "robort "]
+    return [''.join(p) for p in itertools.product(*chars)]
+
+bot = commands.Bot(command_prefix=prefix, intents=intents, case_insensitive=True)
 
 @bot.event
 async def on_ready():
     logger.info(f'Logged in as {bot.user} (ID: {bot.user.id})')
+    await bot.change_presence(activity=discord.Game(name="meow meow meow meow moew moeow eow eow moew emow meow"))
 
 
 @bot.event
