@@ -1,0 +1,11 @@
+# python
+__pycache__/
+.venv/
+
+# logs 
+*.log
+
+# local
+local.env
+guild/
+.vscode/
