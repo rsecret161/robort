@@ -75,9 +75,9 @@ async def on_guild_channel_pins_update(channel, last_pin_time):
 async def on_message(message):
     if message.author.bot:
         return
-
+        
     if message.channel.id == PATCH_NOTES_CHANNEL:
-        if (message.content and "patch" in message.content.lower()) or message.attachments or message.embeds:
+        if (message.content and ("patch" in message.content.lower() or "patch" in message.embeds[0].description.lower() if message.embeds else False)):
             for guild in bot.guilds:
                 try:
                     pn_id = get_channel(guild, channel_type="patch_notes")
@@ -89,6 +89,7 @@ async def on_message(message):
 
                     files = [await a.to_file() for a in message.attachments]
                     embeds = message.embeds
+                    
                     try:
                         await ch.send(content=message.content or "", embeds=embeds, files=files)
                     except Exception:
@@ -173,11 +174,16 @@ async def where(ctx, *, arg=None):
     await msg.delete(delay=10)
 
 @bot.command()
-async def how(ctx, *, args):
-    if arg.lower().replace(" ", "") in ('manypins', 'manypin'):
+async def how(ctx, *, arg=None):
+    if arg is None:
+        msg = await ctx.send(f'Where what? Please provide an argument.')
+        await msg.delete(delay=10)
+        return
+
+    if arg.lower().strip() == 'many pins':
         pins = []
         pin = None
-        async for message in channel.pins(limit=None):
+        async for message in ctx.channel.pins(limit=None):
             pins.append(message)
         c = len(pins)
         c = c if c is not None else 0
