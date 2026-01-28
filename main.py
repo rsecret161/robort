@@ -37,6 +37,8 @@ bot = commands.Bot(command_prefix=prefix, intents=intents, case_insensitive=True
 
 @bot.event
 async def on_ready():
+    print(f'Logged in as {bot.user} (ID: {bot.user.id})')
+    print('Bot ready! Meow :3')
     logger.info(f'Logged in as {bot.user} (ID: {bot.user.id})')
     await bot.change_presence(activity=discord.Game(name="meow meow meow meow moew moeow eow eow moew emow meow"))
 
@@ -169,5 +171,18 @@ async def where(ctx, *, arg=None):
         return
     msg = await ctx.send(f'Unknown where argument: {arg}')
     await msg.delete(delay=10)
+
+@bot.command()
+async def how(ctx, *, args):
+    if arg.lower().replace(" ", "") in ('manypins', 'manypin'):
+        pins = []
+        pin = None
+        async for message in channel.pins(limit=None):
+            pins.append(message)
+        c = len(pins)
+        c = c if c is not None else 0
+        msg = await ctx.send(f'Maximum pins allowed per channel is {MAX_PINS}. This channel has {c} pinned messages.')
+        await msg.delete(delay=20)
+        return
 
 bot.run(TOKEN, log_handler=handler, log_level=logging.DEBUG)
